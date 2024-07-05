@@ -1,5 +1,21 @@
-﻿@model Shop.ERP.Models.PRODUCT_CATEGORY
-
-
-<p>@Model.ID</p>
-<p>@Model.CATEGORY_NAME</p>
+﻿@model IEnumerable<Shop.ERP.Models.PRODUCT_CATEGORY>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Category List</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <tr>
+                <th>Id</th>
+                <th>Category Name</th>
+            </tr>
+            @foreach (PRODUCT_CATEGORY item in Model)
+            {
+                <tr>
+                    <td>@item.ID</td>
+                    <td>@item.CATEGORY_NAME</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
