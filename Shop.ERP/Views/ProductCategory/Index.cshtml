@@ -1,19 +1,27 @@
 ﻿@model IEnumerable<Shop.ERP.Models.PRODUCT_CATEGORY>
+@{
+    ViewData["Title"] = "Product Category List";
+    Layout = "~/Views/shared/_layout.cshtml";
+}
+
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Category List</h3>
+        <a class="btn btn-primary" asp-action="Create">Create new</a>
     </div>
     <div class="card-body">
         <table class="table table-bordered">
             <tr>
                 <th>Id</th>
                 <th>Category Name</th>
+                <th>#</th>
             </tr>
             @foreach (PRODUCT_CATEGORY item in Model)
             {
                 <tr>
                     <td>@item.ID</td>
                     <td>@item.CATEGORY_NAME</td>
+                    <td><a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.ID">Edit</a></td>
                 </tr>
             }
         </table>

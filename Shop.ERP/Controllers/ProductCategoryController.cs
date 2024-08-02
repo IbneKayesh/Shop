@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Shop.ERP.Models;
 
 namespace Shop.ERP.Controllers
@@ -33,6 +34,10 @@ namespace Shop.ERP.Controllers
             //SELECT [p].[ID], [p].[CATEGORY_NAME] FROM[PRODUCT_CATEGORY] AS[p]
             List<PRODUCT_CATEGORY> CategoryList = db.PRODUCT_CATEGORY.ToList();
 
+            //var catData = db.PRODUCT_CATEGORY.FromSqlRaw("exec sp_get_product_category").ToList();
+
+            //var catData2 = db.ExecuteComplexStoredProcedureAsync();
+
             return View(CategoryList);
         }
 
@@ -43,9 +48,39 @@ namespace Shop.ERP.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(PRODUCT_CATEGORY category)
+        public IActionResult Create(PRODUCT_CATEGORY obj)
         {
-            return View(category);
+            if (ModelState.IsValid)
+            {
+                //DB Operation
+                PRODUCT_CATEGORY category = db.PRODUCT_CATEGORY.Find(obj.ID);
+                if (category == null)
+                {
+                    db.PRODUCT_CATEGORY.Add(obj);
+                    db.SaveChanges();
+                }
+                else
+                {
+                    category.CATEGORY_NAME = obj.CATEGORY_NAME;
+                    db.Entry(category).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                return RedirectToAction("Index");
+                //return RedirectToAction(nameof(Index));
+            }
+            return View(obj);
         }
+
+        public IActionResult Edit(int id)
+        {
+            PRODUCT_CATEGORY category = db.PRODUCT_CATEGORY.Find(id);
+            string sql_with_pk = $"select * from PRODUCT_CATEGORY where ID='{id}'";
+
+            PRODUCT_CATEGORY category1 = db.PRODUCT_CATEGORY.Where(p => p.ID == id).FirstOrDefault();
+            //string sql_without_pk = $"select * from PRODUCT_CATEGORY where ID='{id}'";
+
+            return View("Create", category);
+        }
+
     }
 }

@@ -10,5 +10,11 @@ namespace Shop.ERP.Models
         }
 
         public DbSet<PRODUCT_CATEGORY> PRODUCT_CATEGORY { get; set; }
+
+        public List<PRODUCT_CATEGORY> ExecuteComplexStoredProcedureAsync()
+        {
+            var result = Set<PRODUCT_CATEGORY>().FromSqlRaw("EXEC sp_get_product_category").ToList();
+            return result;
+        }
     }
 }

@@ -1,10 +1,24 @@
 ﻿@model Shop.ERP.Models.PRODUCT_CATEGORY
+@{
+    ViewData["Title"] = "Create a new Product Category";
+    Layout = "~/Views/shared/_layout.cshtml";
+}
 
-<form asp-action="Create" method="post">
-
-<input asp-for="ID" title="ID is Primary Key of Table"/>
-<input asp-for="CATEGORY_NAME" title="Enter Category Name" placeholder="Enter Product Category"/>
-
-<button type="submit">Submit</button>
-
-</form>
+<div class="card card-primary">
+    <form asp-action="Create" method="post">
+        <div class="row">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="col-md-4">
+                <input asp-for="ID" title="ID is Primary Key of Table" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CATEGORY_NAME" class="control-label"></label>
+                <input asp-for="CATEGORY_NAME" class="form-input" title="Enter Category Name" placeholder="Enter Product Category" />
+                <span asp-validation-for="CATEGORY_NAME" class="text-danger"></span>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
