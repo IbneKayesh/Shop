@@ -71,7 +71,7 @@ namespace Shop.ERP.Controllers
             return View(obj);
         }
 
-        public IActionResult Edit(int id)
+        public IActionResult Edit(string id)
         {
             PRODUCT_CATEGORY category = db.PRODUCT_CATEGORY.Find(id);
             string sql_with_pk = $"select * from PRODUCT_CATEGORY where ID='{id}'";

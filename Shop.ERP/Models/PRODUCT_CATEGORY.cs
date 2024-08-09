@@ -5,7 +5,7 @@ namespace Shop.ERP.Models
     public class PRODUCT_CATEGORY
     {
 
-        public int ID { get; set; }
+        public string ID { get; set; }
 
 
         [Display(Name ="Category Name")]
