@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Shop.ERP.Models
+﻿namespace Shop.ERP.Models
 {
     public class AppDbContext : DbContext
     {

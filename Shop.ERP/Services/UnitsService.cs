@@ -1,4 +1,6 @@
-﻿namespace Shop.ERP.Services
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace Shop.ERP.Services
 {
     public class UnitsService
     {
@@ -6,6 +8,10 @@
         public UnitsService(AppDbContext dbContext)
         {
             dbCtx = dbContext;
+        }
+        public SelectList GetUnitListItems()
+        {
+            return new SelectList(dbCtx.UNITS.ToList(), "ID", "UNIT_NAME");
         }
         public List<UNITS> GetAll()
         {

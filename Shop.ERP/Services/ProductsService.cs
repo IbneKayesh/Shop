@@ -1,32 +1,31 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Shop.ERP.ViewModels;
 
 namespace Shop.ERP.Services
 {
-    public class ProductCategoryService
+    public class ProductsService
     {
         private readonly AppDbContext dbCtx;
-        public ProductCategoryService(AppDbContext dbContext)
+        public ProductsService(AppDbContext dbContext)
         {
             dbCtx = dbContext;
         }
-
-        public SelectList GetCategoryListItems()
+        public List<PRODUCTS_VM> GetAll()
         {
-            return new SelectList(dbCtx.PRODUCT_CATEGORY.ToList(), "ID", "CATEGORY_NAME");
+            string sql = $@"select p.*,pc.CATEGORY_NAME,un.UNIT_NAME
+                            from PRODUCTS p
+                            join PRODUCT_CATEGORY pc on p.CATEGORY_ID = pc.ID
+                            join UNITS un on p.UNIT_ID = un.ID
+                            order by p.PRODUCT_NAME";
+            return dbCtx.Database.SqlQueryRaw<PRODUCTS_VM>(sql).ToList();
         }
-        public List<PRODUCT_CATEGORY> GetAll()
-        {
-            string sql = $@"SELECT * FROM PRODUCT_CATEGORY ORDER BY CATEGORY_NAME";
-            return dbCtx.Database.SqlQueryRaw<PRODUCT_CATEGORY>(sql).ToList();
-        }
-        public EQResult Save(PRODUCT_CATEGORY obj)
+        public EQResult Save(PRODUCTS obj)
         {
             EQResult eQResult = new EQResult();
-            eQResult.entities = "PRODUCT_CATEGORY";
+            eQResult.entities = "PRODUCTS";
             if (obj.ID == Guid.Empty.ToString())
             {
                 obj.ID = Guid.NewGuid().ToString();
-                dbCtx.PRODUCT_CATEGORY.Add(obj);
+                dbCtx.PRODUCTS.Add(obj);
                 eQResult.rows = dbCtx.SaveChanges();
                 eQResult.success = true;
                 eQResult.messages = NotifyService.SaveSuccess();
@@ -34,10 +33,13 @@ namespace Shop.ERP.Services
             }
             else
             {
-                var entity = dbCtx.PRODUCT_CATEGORY.Where(x => x.ID == obj.ID).FirstOrDefault();
+                var entity = dbCtx.PRODUCTS.Where(x => x.ID == obj.ID).FirstOrDefault();
                 if (entity != null)
                 {
-                    entity.CATEGORY_NAME = obj.CATEGORY_NAME;
+                    entity.CATEGORY_ID = obj.CATEGORY_ID;
+                    entity.UNIT_ID = obj.UNIT_ID;
+                    entity.PRODUCT_NAME = obj.PRODUCT_NAME;
+                    entity.PRODUCT_RATE = obj.PRODUCT_RATE;
                     dbCtx.Entry(entity).State = EntityState.Modified;
 
                     eQResult.rows = dbCtx.SaveChanges();
@@ -54,16 +56,16 @@ namespace Shop.ERP.Services
         }
 
 
-        public PRODUCT_CATEGORY GetById(string id)
+        public PRODUCTS GetById(string id)
         {
-            string sql = $@"SELECT * FROM PRODUCT_CATEGORY WHERE ID = '{id}'";
-            return dbCtx.Database.SqlQueryRaw<PRODUCT_CATEGORY>(sql).ToList().FirstOrDefault();
+            string sql = $@"SELECT * FROM PRODUCTS WHERE ID = '{id}'";
+            return dbCtx.Database.SqlQueryRaw<PRODUCTS>(sql).ToList().FirstOrDefault();
         }
 
         public EQResult Delete(string id)
         {
             EQResult eQResult = new EQResult();
-            eQResult.entities = "PRODUCT_CATEGORY";
+            eQResult.entities = "PRODUCTS";
             if (string.IsNullOrWhiteSpace(id))
             {
                 eQResult.messages = NotifyService.InvalidRequest();
@@ -80,14 +82,14 @@ namespace Shop.ERP.Services
                 //}
 
                 //old entity
-                var entity = dbCtx.PRODUCT_CATEGORY.Find(id);
+                var entity = dbCtx.PRODUCTS.Find(id);
                 if (entity != null)
                 {
                     //TODO : Delete property
-                    dbCtx.PRODUCT_CATEGORY.Remove(entity);
+                    dbCtx.PRODUCTS.Remove(entity);
                     eQResult.rows = dbCtx.SaveChanges();
                     eQResult.success = true;
-                    eQResult.messages = NotifyService.DeletedSuccess(entity.CATEGORY_NAME!);
+                    eQResult.messages = NotifyService.DeletedSuccess(entity.PRODUCT_NAME!);
                     return eQResult;
                 }
                 else
