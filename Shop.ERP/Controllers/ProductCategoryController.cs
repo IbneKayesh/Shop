@@ -1,85 +1,68 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Shop.ERP.Models;
-
-namespace Shop.ERP.Controllers
+﻿namespace Shop.ERP.Controllers
 {
     public class ProductCategoryController : Controller
     {
-        private readonly AppDbContext db;
-        public ProductCategoryController(AppDbContext dbContext)
+        private readonly ProductCategoryService productCategoryService;
+        public ProductCategoryController(ProductCategoryService _productCategoryService)
         {
-            db = dbContext;
+            productCategoryService = _productCategoryService;
         }
-
         public IActionResult Index()
         {
-            //List<PRODUCT_CATEGORY> CategoryList = new List<PRODUCT_CATEGORY>();
-
-            //PRODUCT_CATEGORY category = new PRODUCT_CATEGORY();
-            //category.ID = 1;
-            //category.CATEGORY_NAME = "Food Products";
-            //CategoryList.Add(category);
-
-            //category = new PRODUCT_CATEGORY();
-            //category.ID = 2;
-            //category.CATEGORY_NAME = "Cosmetics Products";
-            //CategoryList.Add(category);
-
-
-
-
-            //Linq
-            //select * from PRODUCT_CATEGORY
-            //SELECT [p].[ID], [p].[CATEGORY_NAME] FROM[PRODUCT_CATEGORY] AS[p]
-            List<PRODUCT_CATEGORY> CategoryList = db.PRODUCT_CATEGORY.ToList();
-
-            //var catData = db.PRODUCT_CATEGORY.FromSqlRaw("exec sp_get_product_category").ToList();
-
-            //var catData2 = db.ExecuteComplexStoredProcedureAsync();
-
-            return View(CategoryList);
+            var objList = productCategoryService.GetAll();
+            return View(objList);
         }
 
         public IActionResult Create()
         {
-            PRODUCT_CATEGORY category = new PRODUCT_CATEGORY();
-            return View(category);
+            return View("AddUpdate", new PRODUCT_CATEGORY());
         }
-
-        [HttpPost]
-        public IActionResult Create(PRODUCT_CATEGORY obj)
+        public IActionResult Edit(string id)
         {
-            if (ModelState.IsValid)
+            if (!string.IsNullOrWhiteSpace(id))
             {
-                //DB Operation
-                PRODUCT_CATEGORY category = db.PRODUCT_CATEGORY.Find(obj.ID);
-                if (category == null)
+                var entity = productCategoryService.GetById(id);
+                if (entity != null)
                 {
-                    db.PRODUCT_CATEGORY.Add(obj);
-                    db.SaveChanges();
+                    return View("AddUpdate", entity);
                 }
                 else
                 {
-                    category.CATEGORY_NAME = obj.CATEGORY_NAME;
-                    db.Entry(category).State = EntityState.Modified;
-                    db.SaveChanges();
+                    TempData["msg"] = NotifyService.NotFound();
                 }
-                return RedirectToAction("Index");
-                //return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                TempData["msg"] = NotifyService.Error("Invalid ID, Parameter is required");
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        public IActionResult AddUpdate(PRODUCT_CATEGORY obj)
+        {
+            EQResult eQResult = new EQResult();
+            if (ModelState.IsValid)
+            {
+                eQResult = productCategoryService.Save(obj);
+                TempData["msg"] = eQResult.messages;
+                return RedirectToAction(nameof(Index));
             }
             return View(obj);
         }
 
-        public IActionResult Edit(string id)
+        public IActionResult Delete(string id)
         {
-            PRODUCT_CATEGORY category = db.PRODUCT_CATEGORY.Find(id);
-            string sql_with_pk = $"select * from PRODUCT_CATEGORY where ID='{id}'";
-
-            PRODUCT_CATEGORY category1 = db.PRODUCT_CATEGORY.Where(p => p.ID == id).FirstOrDefault();
-            //string sql_without_pk = $"select * from PRODUCT_CATEGORY where ID='{id}'";
-
-            return View("Create", category);
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                EQResult eQResult = productCategoryService.Delete(id);
+                TempData["msg"] = eQResult.messages;
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                TempData["msg"] = NotifyService.Error("Invalid ID, Parameter is required");
+            }
+            return RedirectToAction(nameof(Index));
         }
 
     }

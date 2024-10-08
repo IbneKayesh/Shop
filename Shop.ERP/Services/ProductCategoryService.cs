@@ -1,25 +1,25 @@
 ﻿namespace Shop.ERP.Services
 {
-    public class UnitsService
+    public class ProductCategoryService
     {
         private readonly AppDbContext dbCtx;
-        public UnitsService(AppDbContext dbContext)
+        public ProductCategoryService(AppDbContext dbContext)
         {
             dbCtx = dbContext;
         }
-        public List<UNITS> GetAll()
+        public List<PRODUCT_CATEGORY> GetAll()
         {
-            string sql = $@"SELECT * FROM UNITS ORDER BY UNIT_NAME";
-            return dbCtx.Database.SqlQueryRaw<UNITS>(sql).ToList();
+            string sql = $@"SELECT * FROM PRODUCT_CATEGORY ORDER BY CATEGORY_NAME";
+            return dbCtx.Database.SqlQueryRaw<PRODUCT_CATEGORY>(sql).ToList();
         }
-        public EQResult Save(UNITS obj)
+        public EQResult Save(PRODUCT_CATEGORY obj)
         {
             EQResult eQResult = new EQResult();
-            eQResult.entities = "UNITS";
+            eQResult.entities = "PRODUCT_CATEGORY";
             if (obj.ID == Guid.Empty.ToString())
             {
                 obj.ID = Guid.NewGuid().ToString();
-                dbCtx.UNITS.Add(obj);
+                dbCtx.PRODUCT_CATEGORY.Add(obj);
                 eQResult.rows = dbCtx.SaveChanges();
                 eQResult.success = true;
                 eQResult.messages = NotifyService.SaveSuccess();
@@ -27,10 +27,10 @@
             }
             else
             {
-                var entity = dbCtx.UNITS.Where(x => x.ID == obj.ID).FirstOrDefault();
+                var entity = dbCtx.PRODUCT_CATEGORY.Where(x => x.ID == obj.ID).FirstOrDefault();
                 if (entity != null)
                 {
-                    entity.UNIT_NAME = obj.UNIT_NAME;
+                    entity.CATEGORY_NAME = obj.CATEGORY_NAME;
                     dbCtx.Entry(entity).State = EntityState.Modified;
 
                     eQResult.rows = dbCtx.SaveChanges();
@@ -47,16 +47,16 @@
         }
 
 
-        public UNITS GetById(string id)
+        public PRODUCT_CATEGORY GetById(string id)
         {
-            string sql = $@"SELECT * FROM UNITS WHERE ID = '{id}'";
-            return dbCtx.Database.SqlQueryRaw<UNITS>(sql).ToList().FirstOrDefault();
+            string sql = $@"SELECT * FROM PRODUCT_CATEGORY WHERE ID = '{id}'";
+            return dbCtx.Database.SqlQueryRaw<PRODUCT_CATEGORY>(sql).ToList().FirstOrDefault();
         }
 
         public EQResult Delete(string id)
         {
             EQResult eQResult = new EQResult();
-            eQResult.entities = "UNITS";
+            eQResult.entities = "PRODUCT_CATEGORY";
             if (string.IsNullOrWhiteSpace(id))
             {
                 eQResult.messages = NotifyService.InvalidRequest();
@@ -73,14 +73,14 @@
                 //}
 
                 //old entity
-                var entity = dbCtx.UNITS.Find(id);
+                var entity = dbCtx.PRODUCT_CATEGORY.Find(id);
                 if (entity != null)
                 {
                     //TODO : Delete property
-                    dbCtx.UNITS.Remove(entity);
+                    dbCtx.PRODUCT_CATEGORY.Remove(entity);
                     eQResult.rows = dbCtx.SaveChanges();
                     eQResult.success = true;
-                    eQResult.messages = NotifyService.DeletedSuccess(entity.UNIT_NAME!);
+                    eQResult.messages = NotifyService.DeletedSuccess(entity.CATEGORY_NAME!);
                     return eQResult;
                 }
                 else

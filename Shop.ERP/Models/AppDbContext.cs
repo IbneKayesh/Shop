@@ -10,8 +10,8 @@ namespace Shop.ERP.Models
         }
 
         public DbSet<UNITS> UNITS { get; set; }
-        public DbSet<PRODUCTS> PRODUCTS { get; set; }
         public DbSet<PRODUCT_CATEGORY> PRODUCT_CATEGORY { get; set; }
+        public DbSet<PRODUCTS> PRODUCTS { get; set; }
 
         public List<PRODUCT_CATEGORY> ExecuteComplexStoredProcedureAsync()
         {

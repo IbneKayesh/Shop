@@ -15,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddTransient<UnitsService>();
+builder.Services.AddTransient<ProductCategoryService>();
 
 var app = builder.Build();
 

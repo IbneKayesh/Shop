@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace Shop.ERP.Models
+﻿namespace Shop.ERP.Models
 {
     public class UNITS
     {
