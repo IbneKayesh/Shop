@@ -2,8 +2,6 @@
 {
     public class ProductController : Controller
     {
-        private readonly AppDbContext db;
-
         private readonly ProductsService productsService;
         private readonly ProductCategoryService productCategoryService;
         private readonly UnitsService unitsService;
@@ -11,7 +9,6 @@
             ProductCategoryService _productCategoryService,
             UnitsService _unitsService)
         {
-            db = dbContext;
             productsService = _productsService;
             productCategoryService = _productCategoryService;
             unitsService = _unitsService;
@@ -71,23 +68,23 @@
 
         public IActionResult Delete(string id)
         {
-            if (!string.IsNullOrWhiteSpace(id))
-            {
-                var entity = db.PRODUCTS.Find(id);
-                if (entity != null)
-                {
-                    db.PRODUCTS.Remove(entity);
-                    db.SaveChanges();
-                }
-                else
-                {
-                    //not found
-                }
-            }
-            else
-            {
-                //invalid request
-            }
+            //if (!string.IsNullOrWhiteSpace(id))
+            //{
+            //    var entity = db.PRODUCTS.Find(id);
+            //    if (entity != null)
+            //    {
+            //        db.PRODUCTS.Remove(entity);
+            //        db.SaveChanges();
+            //    }
+            //    else
+            //    {
+            //        //not found
+            //    }
+            //}
+            //else
+            //{
+            //    //invalid request
+            //}
             return RedirectToAction(nameof(Index));
         }
 
@@ -96,5 +93,16 @@
             ViewBag.CATEGORY_ID = productCategoryService.GetCategoryListItems();
             ViewBag.UNIT_ID = unitsService.GetUnitListItems();
         }
+
+
+
+        [Route("api/Products/GetByCategoryID")]
+        [HttpGet]
+        public IActionResult GetAllByCategoryID(string id)
+        {
+            var objList = productsService.GetByCategoryId(id);
+            return Json(objList);
+        }
+
     }
 }

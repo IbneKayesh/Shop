@@ -11,7 +11,7 @@ namespace Shop.ERP.Services
         }
         public SelectList GetUnitListItems()
         {
-            return new SelectList(dbCtx.UNITS.ToList(), "ID", "UNIT_NAME");
+            return new SelectList(dbCtx.UNITS.OrderBy(x=>x.UNIT_NAME).ToList(), "ID", "UNIT_NAME");
         }
         public List<UNITS> GetAll()
         {

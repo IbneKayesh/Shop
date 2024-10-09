@@ -12,7 +12,7 @@ namespace Shop.ERP.Services
 
         public SelectList GetCategoryListItems()
         {
-            return new SelectList(dbCtx.PRODUCT_CATEGORY.ToList(), "ID", "CATEGORY_NAME");
+            return new SelectList(dbCtx.PRODUCT_CATEGORY.OrderBy(x=>x.CATEGORY_NAME).ToList(), "ID", "CATEGORY_NAME");
         }
         public List<PRODUCT_CATEGORY> GetAll()
         {

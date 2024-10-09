@@ -1,0 +1,218 @@
+﻿@model Shop.ERP.ViewModels.SALES_MD_VM
+
+@{
+    ViewData["Title"] = "Sales Invoice";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h3 class="card-title">Add/Edit @ViewData["Title"]</h3>
+        <div class="card-tools">
+            <a class="btn btn-primary btn-xs" asp-action="Create"><i class="fa fa-plus"></i> Create New</a>
+        </div>
+    </div>
+    <form asp-action="AddUpdate">
+        <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="SALES_MASTER.ID" type="hidden" />
+            <div class="row">
+                <div class="col-md-2">
+                    <label asp-for="SALES_MASTER.SALES_NO" class="control-label"></label>
+                    <input asp-for="SALES_MASTER.SALES_NO" class="form-control form-control-sm" readonly placeholder="Sales No">
+                    <span asp-validation-for="SALES_MASTER.SALES_NO" class="text-danger"></span>
+                </div>
+                <div class="col-md-2">
+                    <label asp-for="SALES_MASTER.TRN_DATE" class="control-label"></label>
+                    <input asp-for="SALES_MASTER.TRN_DATE" class="form-control form-control-sm" readonly placeholder="Sales Date">
+                    <span asp-validation-for="SALES_MASTER.TRN_DATE" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="SALES_MASTER.CUSTOMER_NAME" class="control-label"></label>
+                    <input asp-for="SALES_MASTER.CUSTOMER_NAME" class="form-control form-control-sm" placeholder="Customer Name">
+                    <span asp-validation-for="SALES_MASTER.CUSTOMER_NAME" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="SALES_MASTER.TRN_NOTE" class="control-label"></label>
+                    <input asp-for="SALES_MASTER.TRN_NOTE" class="form-control form-control-sm" placeholder="Sales Note">
+                    <span asp-validation-for="SALES_MASTER.TRN_NOTE" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="categoryList row mt-2">
+                        <div id="categoryListLoader" class="overlay-wrapper">
+                            <div class="overlay"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="productList table-responsive">
+                        <div id="productListLoader" class="overlay-wrapper d-none">
+                            <div class="overlay"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                        </div>
+                        <table class="table-xs table-hover table-bordered" style="width:100%" id="tblproductList">
+                            <thead class="bg-info text-white text-center">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>UOM</th>
+                                    <th>Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <table class="table-xs table-hover table-bordered mt-2" style="width:100%" id="tblcartList">
+                        <thead class="bg-danger text-white text-center">
+                            <tr>
+                                <th>Name</th>
+                                <th>UOM</th>
+                                <th>Rate</th>
+                                <th style="width:50px">Qty</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr class="bg-secondary text-white text-center">
+                                <td colspan="3"><strong>Total</strong></td>
+                                <td id="totalQty">0</td>
+                                <td id="totalAmount">0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a asp-action="Index" class="btn btn-sm btn-primary"><i class="fa fa-chevron-left"></i> Back</a>
+            <button class="btn btn-sm btn-info" type="reset"><i class="fa fa-undo"></i> Reset</button>
+            <button type="button" class="btn btn-sm btn-success">
+                <span class="spinner-border spinner-border-sm"></span> Saving...
+            </button>
+            <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-save"></i> Submit</button>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '/api/ProductCategory/GetAll',
+                type: 'GET',
+                success: function (data) {
+                    $.each(data, function (index, item) {
+                        CreateCategoryButton(item);
+                    });
+                },
+                error: function (xhr) {
+                    $.notify('Error: ' + xhr.status + ' ' + xhr.statusText, "error");
+                },
+                complete: function (xhr, status) {
+                    $("#categoryListLoader").addClass("d-none");
+                }
+            });
+        });
+        function CreateCategoryButton(item) {
+            var d1 = $('<div class="btn btn-flat btn-default m-1 bg-info" data-categoryid="' + item.ID + '" onclick="LoadProducts(this)"></div>');
+            var d2 = $('<span class="text-center text-sm">' + item.CATEGORY_NAME + '</span>');
+            d1.append(d2);
+            $('.categoryList').append(d1);
+        }
+
+        function LoadProducts(e) {
+            var categoryid = $(e).data('categoryid');
+
+            $.ajax({
+                url: '/api/Products/GetByCategoryID',
+                type: 'GET',
+                contentType: 'application/json',
+                data: { id: categoryid },
+                success: function (data, status, xhr) {
+                    $('#tblproductList tbody tr').remove();
+                    $.each(data, function (index, item) {
+                        CreateProductListTable(item)
+                    });
+                },
+                error: function (xhr) {
+                    $.notify('Error: ' + xhr.status + ' ' + xhr.statusText, "error");
+                },
+                complete: function (xhr, status) {
+
+                }
+            });
+        }
+        function CreateProductListTable(item) {
+            var row = $('<tr data-id="' + item.ID + '" data-unit_name="' + item.UNIT_NAME + '" data-product_rate="' + item.PRODUCT_RATE + '" data-product_name="' + item.PRODUCT_NAME + '" onclick="AddToCart(this)"></tr>');
+            row.append('<td>' + item.PRODUCT_NAME + '</td>');
+            row.append('<td>' + item.UNIT_NAME + '</td>');
+            row.append('<td>' + item.PRODUCT_RATE + '</td>');
+            $('#tblproductList tbody').append(row);
+        }
+        function AddToCart(e) {
+            var exist = false;
+            var id = $(e).data('id');
+
+            if ($('#tblcartList tbody tr').length > 0) {
+                $('#tblcartList tbody tr').each(function () {
+                    var row = $(this);
+                    var rowId = row.find('td:first').text();
+                    if (id === rowId) {
+                        row.find('td.qty').html(function (index, value) {
+                            return parseInt(value) + 1;
+                        });
+
+                        row.find('td.amount').text(function (index, value) {
+                            var rate = row.find('td.rate').html();
+                            var quantity = row.find('td.qty').html();
+                            return parseInt(rate) * parseInt(quantity);
+                        });
+                        exist = true;
+                    }
+                });
+            }
+
+            if (exist == false) {
+                var unit_name = $(e).data('unit_name');
+                var product_rate = $(e).data('product_rate');
+                var product_name = $(e).data('product_name');
+
+                var row = $('<tr onclick="RemoveFromCart(this)"></tr>');
+                row.append('<td class="d-none">' + id + '</td>');
+                row.append('<td>' + product_name + '</td>');
+                row.append('<td>' + unit_name + '</td>');
+                row.append('<td class="rate">' + product_rate + '</td>');
+                row.append('<td class="qty">1</td>');
+                row.append('<td class="amount">' + product_rate + '</td>');
+                $('#tblcartList tbody').append(row);
+            }
+
+            calculateTotals();
+        }
+
+        function RemoveFromCart(e) {
+            if (confirm("Are you sure you want to remove this item?")) {
+                e.parentNode.removeChild(e);
+                calculateTotals();
+            }
+        }
+        function calculateTotals() {
+            var totalQty = 0;
+            var totalAmount = 0;
+
+            $('#tblcartList tbody tr').each(function () {
+                var row = $(this);
+                totalQty += parseInt(row.find('td.qty').html());
+                totalAmount += parseInt(row.find('td.amount').html());
+            });
+
+            $('#totalQty').text(totalQty);
+            $('#totalAmount').text(totalAmount);
+        }
+    </script>
+}

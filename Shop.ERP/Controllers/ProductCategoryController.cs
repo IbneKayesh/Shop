@@ -65,5 +65,13 @@
             return RedirectToAction(nameof(Index));
         }
 
+
+        [Route("api/ProductCategory/GetAll")]
+        [HttpGet]
+        public IActionResult GetAllCategory()
+        {
+            var objList = productCategoryService.GetAll();
+            return Json(objList);
+        }
     }
 }

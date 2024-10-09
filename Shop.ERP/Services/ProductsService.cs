@@ -1,4 +1,5 @@
-﻿using Shop.ERP.ViewModels;
+﻿using Microsoft.Data.SqlClient;
+using Shop.ERP.ViewModels;
 
 namespace Shop.ERP.Services
 {
@@ -15,7 +16,7 @@ namespace Shop.ERP.Services
                             from PRODUCTS p
                             join PRODUCT_CATEGORY pc on p.CATEGORY_ID = pc.ID
                             join UNITS un on p.UNIT_ID = un.ID
-                            order by p.PRODUCT_NAME";
+                            order by pc.CATEGORY_NAME,p.PRODUCT_NAME";
             return dbCtx.Database.SqlQueryRaw<PRODUCTS_VM>(sql).ToList();
         }
         public EQResult Save(PRODUCTS obj)
@@ -109,6 +110,20 @@ namespace Shop.ERP.Services
                 dbCtx.Dispose();
             }
         }
+
+
+        public List<PRODUCTS_VM> GetByCategoryId(string category_id)
+        {
+            List<object> param = new List<object>();
+            param.Add(new SqlParameter("@CATEGORY_ID", category_id));
+            string sql = $@"select p.*,pc.CATEGORY_NAME,un.UNIT_NAME
+                            from PRODUCTS p
+                            join PRODUCT_CATEGORY pc on p.CATEGORY_ID = pc.ID
+                            join UNITS un on p.UNIT_ID = un.ID Where p.CATEGORY_ID = @CATEGORY_ID
+                            order by p.PRODUCT_NAME";
+            return dbCtx.Database.SqlQueryRaw<PRODUCTS_VM>(sql, param.ToArray()).ToList();
+        }
+
 
     }
 }

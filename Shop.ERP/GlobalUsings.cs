@@ -5,3 +5,5 @@ global using Shop.ERP.Models;
 global using Shop.ERP.Services;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.ComponentModel.DataAnnotations;
+global using Microsoft.AspNetCore.Mvc;
+global using Shop.ERP.ViewModels;
