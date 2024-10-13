@@ -23,6 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddTransient<UnitsService>();
 builder.Services.AddTransient<ProductCategoryService>();
 builder.Services.AddTransient<ProductsService>();
+builder.Services.AddTransient<SalesInvoiceService>();
 
 var app = builder.Build();
 

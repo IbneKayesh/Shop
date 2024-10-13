@@ -1,6 +1,6 @@
-﻿@model IEnumerable<Shop.ERP.Models.UNITS>
+﻿@model IEnumerable<Shop.ERP.Models.SALES_MASTER>
 @{
-    ViewData["Title"] = "Units";
+    ViewData["Title"] = "Sales Invoice";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="card card-primary card-outline">
@@ -15,7 +15,10 @@
         <table class="table table-hover table-sm">
             <thead>
                 <tr>
-                    <th>Unit Name</th>
+                    <th>Sales No</th>
+                    <th>Sales Date</th>
+                    <th>Customer</th>
+                    <th>Note</th>
                     <th>#</th>
                 </tr>
             </thead>
@@ -24,11 +27,19 @@
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.UNIT_NAME)
+                            @Html.DisplayFor(modelItem => item.SALES_NO)
                         </td>
                         <td>
-                            <a class="btn btn-primary btn-xs" asp-action="Edit" asp-route-id="@item.ID"><i class="fa fa-edit"></i> Edit</a>
-                            <a class="btn btn-danger btn-xs" asp-action="Delete" asp-route-id="@item.ID" onclick="return confirm('Are you sure?')"><i class="fa fa-trash"></i> Delete</a>
+                            @Html.DisplayFor(modelItem => item.TRN_DATE)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CUSTOMER_NAME)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TRN_NOTE)
+                        </td>
+                        <td>
+                            <a class="btn btn-primary btn-xs" asp-action="Create" asp-route-id="@item.ID"><i class="fa fa-edit"></i> Edit</a>
                         </td>
                     </tr>
                 }

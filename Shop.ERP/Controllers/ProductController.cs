@@ -51,7 +51,6 @@
         }
 
         [HttpPost]
-        [HttpPost]
         public IActionResult AddUpdate(PRODUCTS obj)
         {
             EQResult eQResult = new EQResult();

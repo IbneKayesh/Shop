@@ -5,13 +5,14 @@
         public SALES_MASTER()
         {
             ID = Guid.Empty.ToString();
+            SALES_NO = "INV-XYZ";
             CUSTOMER_NAME = "Walking Customer";
             TRN_DATE = DateTime.Now;
         }
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Display(Name = "ID")]
         [StringLength(50, ErrorMessage = "{0} length is {2} between {1}", MinimumLength = 1)]
-        public string ID { get; set; }
+        public string? ID { get; set; }
 
         [Display(Name = "Sales No")]
         [StringLength(50, ErrorMessage = "{0} length is {2} between {1}", MinimumLength = 0)]
@@ -30,7 +31,5 @@
         [Display(Name = "Note")]
         [StringLength(250, ErrorMessage = "{0} length is {2} between {1}", MinimumLength = 0)]
         public string? TRN_NOTE { get; set; }
-
-
     }
 }

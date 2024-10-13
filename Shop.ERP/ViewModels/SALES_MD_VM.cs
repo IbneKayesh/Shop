@@ -2,7 +2,7 @@
 {
     public class SALES_MD_VM
     {
-        public SALES_MASTER? SALES_MASTER = new SALES_MASTER();
-        public List<SALES_DETAIL>? SALES_DETAIL = new List<SALES_DETAIL>();
+        public SALES_MASTER? SALES_MASTER { get; set; }
+        public List<SALES_DETAIL_VM>? SALES_DETAIL_VM { get; set; }
     }
 }
